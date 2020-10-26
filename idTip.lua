@@ -18,6 +18,7 @@ local kinds = {
   equipmentset = "EquipmentSetID",
   visual = "VisualID",
   source = "SourceID",
+  species = "SpeciesID",
 }
 
 local isClassicWow = select(4,_G.GetBuildInfo()) < 20000 --TODO: Update version
@@ -158,6 +159,17 @@ if not isClassicWow then
     addLine(self, id, kinds.talent)
     addLine(self, spellID, kinds.spell)
   end)
+
+  -- Pet Journal team icon
+  _G.hooksecurefunc(_G.GameTooltip, "SetCompanionPet", function(_, petID)
+    local speciesID = select(1, _G.C_PetJournal.GetPetInfoByPetID(petID));
+    if speciesID then
+      local npcId = select(4, _G.C_PetJournal.GetPetInfoBySpeciesID(speciesID));
+      addLine(_G.GameTooltip, speciesID, kinds.species);
+      addLine(_G.GameTooltip, npcId, kinds.unit);
+    end
+  end)
+
 end
 -- NPCs
 _G.GameTooltip:HookScript("OnTooltipSetUnit", function(self)
@@ -314,6 +326,14 @@ f:SetScript("OnEvent", function(_, _, what)
       end
       if #itemIDs ~= 0 then
         addLine(_G.GameTooltip, itemIDs, kinds.item)
+      end
+    end)
+    -- Pet Journal selected pet info icon
+    _G.PetJournalPetCardPetInfo:HookScript("OnEnter", function(_)
+      if _G.PetJournalPetCard.speciesID then
+        local npcId = select(4, _G.C_PetJournal.GetPetInfoBySpeciesID(_G.PetJournalPetCard.speciesID));
+        addLine(_G.GameTooltip, _G.PetJournalPetCard.speciesID, kinds.species);
+        addLine(_G.GameTooltip, npcId, kinds.unit);
       end
     end)
   end
