@@ -254,14 +254,14 @@ local f = _G.CreateFrame("frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(_, _, what)
   if what == "Blizzard_AchievementUI" then
-    for _,button in ipairs(_G.AchievementFrameAchievementsContainer.buttons) do
-      button:HookScript("OnEnter", function()
-        _G.GameTooltip:SetOwner(button, "ANCHOR_NONE")
-        _G.GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
-        addLine(_G.GameTooltip, button.id, kinds.achievement)
+    for _, achievement_button in ipairs(_G.AchievementFrameAchievementsContainer.buttons) do
+      achievement_button:HookScript("OnEnter", function()
+        _G.GameTooltip:SetOwner(achievement_button, "ANCHOR_NONE")
+        _G.GameTooltip:SetPoint("TOPLEFT", achievement_button, "TOPRIGHT", 0, 0)
+        addLine(_G.GameTooltip, achievement_button.id, kinds.achievement)
         _G.GameTooltip:Show()
       end)
-      button:HookScript("OnLeave", function()
+      achievement_button:HookScript("OnLeave", function()
         _G.GameTooltip:Hide()
       end)
 
