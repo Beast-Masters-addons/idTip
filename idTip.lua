@@ -220,7 +220,8 @@ local function attachItemTooltip(self)
     end
   end
   local id = string.match(link, "item:(%d*)")
-  if (id == "" or id == "0") and _G.TradeSkillFrame ~= nil and _G.TradeSkillFrame:IsVisible() and _G.GetMouseFocus().reagentIndex then
+  if (id == "" or id == "0") and _G.TradeSkillFrame ~= nil and
+    _G.TradeSkillFrame:IsVisible() and _G.GetMouseFocus().reagentIndex then
     local selectedRecipe = _G.TradeSkillFrame.RecipeList:GetSelectedRecipeID()
     for i = 1, 8 do
       if _G.GetMouseFocus().reagentIndex == i then
@@ -294,14 +295,26 @@ f:SetScript("OnEvent", function(_, _, what)
       local itemIDs = {}
 
       for i = 1, #sources do
-        if sources[i].visualID and not contains(visualIDs, sources[i].visualID) then table.insert(visualIDs, sources[i].visualID) end
-        if sources[i].sourceID and not contains(visualIDs, sources[i].sourceID) then table.insert(sourceIDs, sources[i].sourceID) end
-        if sources[i].itemID and not contains(visualIDs, sources[i].itemID) then table.insert(itemIDs, sources[i].itemID) end
+        if sources[i].visualID and not contains(visualIDs, sources[i].visualID) then
+          table.insert(visualIDs, sources[i].visualID)
+        end
+        if sources[i].sourceID and not contains(visualIDs, sources[i].sourceID) then
+          table.insert(sourceIDs, sources[i].sourceID)
+        end
+        if sources[i].itemID and not contains(visualIDs, sources[i].itemID) then
+          table.insert(itemIDs, sources[i].itemID)
+        end
       end
 
-      if #visualIDs ~= 0 then addLine(_G.GameTooltip, visualIDs, kinds.visual) end
-      if #sourceIDs ~= 0 then addLine(_G.GameTooltip, sourceIDs, kinds.source) end
-      if #itemIDs ~= 0 then addLine(_G.GameTooltip, itemIDs, kinds.item) end
+      if #visualIDs ~= 0 then
+        addLine(_G.GameTooltip, visualIDs, kinds.visual)
+      end
+      if #sourceIDs ~= 0 then
+        addLine(_G.GameTooltip, sourceIDs, kinds.source)
+      end
+      if #itemIDs ~= 0 then
+        addLine(_G.GameTooltip, itemIDs, kinds.item)
+      end
     end)
   end
 end)
@@ -314,7 +327,8 @@ if not isClassicWow then
       local id = select(1, _G.C_PetBattles.GetAbilityInfo(_G.LE_BATTLE_PET_ALLY, petIndex, self:GetID()))
       if id then
         local oldText = _G.PetBattlePrimaryAbilityTooltip.Description:GetText(id)
-        _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
+        _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" ..
+          kinds.ability .. "|cffffffff " .. id .. "|r") --TODO: Use colorize
       end
     end
   end)
@@ -325,7 +339,8 @@ if not isClassicWow then
     local id = select(1, _G.C_PetBattles.GetAuraInfo(parent.petOwner, parent.petIndex, self.auraIndex))
     if id then
       local oldText = _G.PetBattlePrimaryAbilityTooltip.Description:GetText(id)
-      _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
+      _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" ..
+        kinds.ability .. "|cffffffff " .. id .. "|r") --TODO: Use colorize
     end
   end)
 
