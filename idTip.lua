@@ -1,8 +1,3 @@
-local hooksecurefunc, select, UnitBuff, UnitDebuff, UnitAura, UnitGUID,
-      GetGlyphSocketInfo, tonumber, strfind
-    = hooksecurefunc, select, UnitBuff, UnitDebuff, UnitAura, UnitGUID,
-      GetGlyphSocketInfo, tonumber, strfind
-
 local kinds = {
   spell = "SpellID",
   item = "ItemID",
@@ -25,7 +20,7 @@ local kinds = {
   source = "SourceID",
 }
 
-local isClassicWow = select(4,GetBuildInfo()) < 20000
+local isClassicWow = select(4,_G.GetBuildInfo()) < 20000 --TODO: Update version
 
 local function contains(table, element)
   for _, value in pairs(table) do
@@ -48,11 +43,11 @@ local function addLine(tooltip, id, kind)
 
   local left, right
   if type(id) == "table" then
-    left = NORMAL_FONT_COLOR_CODE .. kind .. "s:" .. FONT_COLOR_CODE_CLOSE
-    right = HIGHLIGHT_FONT_COLOR_CODE .. table.concat(id, ", ") .. FONT_COLOR_CODE_CLOSE
+    left = _G.NORMAL_FONT_COLOR_CODE .. kind .. "s:" .. _G.FONT_COLOR_CODE_CLOSE
+    right = _G.HIGHLIGHT_FONT_COLOR_CODE .. table.concat(id, ", ") .. _G.FONT_COLOR_CODE_CLOSE
   else
-    left = NORMAL_FONT_COLOR_CODE .. kind .. ":" .. FONT_COLOR_CODE_CLOSE
-    right = HIGHLIGHT_FONT_COLOR_CODE .. id .. FONT_COLOR_CODE_CLOSE
+    left = _G.NORMAL_FONT_COLOR_CODE .. kind .. ":" .. _G.FONT_COLOR_CODE_CLOSE
+    right = _G.HIGHLIGHT_FONT_COLOR_CODE .. id .. _G.FONT_COLOR_CODE_CLOSE --TODO: Use colorize method
   end
 
   tooltip:AddDoubleLine(left, right)
@@ -92,99 +87,99 @@ local function onSetHyperlink(self, link)
   addLineByKind(self, id, kind)
 end
 
-hooksecurefunc(GameTooltip, "SetAction", function(self, slot)
-  local kind, id = GetActionInfo(slot)
+_G.hooksecurefunc(_G.GameTooltip, "SetAction", function(self, slot)
+  local kind, id = _G.GetActionInfo(slot)
   addLineByKind(self, id, kind)
 end)
 
-hooksecurefunc(ItemRefTooltip, "SetHyperlink", onSetHyperlink)
-hooksecurefunc(GameTooltip, "SetHyperlink", onSetHyperlink)
+_G.hooksecurefunc(_G.ItemRefTooltip, "SetHyperlink", onSetHyperlink)
+_G.hooksecurefunc(_G.GameTooltip, "SetHyperlink", onSetHyperlink)
 
 -- Spells
-hooksecurefunc(GameTooltip, "SetUnitBuff", function(self, ...)
-  local id = select(10, UnitBuff(...))
+_G.hooksecurefunc(_G.GameTooltip, "SetUnitBuff", function(self, ...)
+  local id = select(10, _G.UnitBuff(...))
   addLine(self, id, kinds.spell)
 end)
 
-hooksecurefunc(GameTooltip, "SetUnitDebuff", function(self, ...)
-  local id = select(10, UnitDebuff(...))
+_G.hooksecurefunc(_G.GameTooltip, "SetUnitDebuff", function(self, ...)
+  local id = select(10, _G.UnitDebuff(...))
   addLine(self, id, kinds.spell)
 end)
 
-hooksecurefunc(GameTooltip, "SetUnitAura", function(self, ...)
-  local id = select(10, UnitAura(...))
+_G.hooksecurefunc(_G.GameTooltip, "SetUnitAura", function(self, ...)
+  local id = select(10, _G.UnitAura(...))
   addLine(self, id, kinds.spell)
 end)
 
-hooksecurefunc(GameTooltip, "SetSpellByID", function(self, id)
+_G.hooksecurefunc(_G.GameTooltip, "SetSpellByID", function(self, id)
   addLineByKind(self, id, kinds.spell)
 end)
 
-hooksecurefunc("SetItemRef", function(link, ...)
+_G.hooksecurefunc("SetItemRef", function(link, ...) --TODO: Check if ... can be removed
   local id = tonumber(link:match("spell:(%d+)"))
-  addLine(ItemRefTooltip, id, kinds.spell)
+  addLine(_G.ItemRefTooltip, id, kinds.spell)
 end)
 
-GameTooltip:HookScript("OnTooltipSetSpell", function(self)
+_G.GameTooltip:HookScript("OnTooltipSetSpell", function(self)
   local id = select(2, self:GetSpell())
   addLine(self, id, kinds.spell)
 end)
 
-hooksecurefunc("SpellButton_OnEnter", function(self)
-  local slot = SpellBook_GetSpellBookSlot(self)
-  local spellID = select(2, GetSpellBookItemInfo(slot, SpellBookFrame.bookType))
-  addLine(GameTooltip, spellID, kinds.spell)
+_G.hooksecurefunc("SpellButton_OnEnter", function(self)
+  local slot = _G.SpellBook_GetSpellBookSlot(self)
+  local spellID = select(2, _G.GetSpellBookItemInfo(slot, _G.SpellBookFrame.bookType))
+  addLine(_G.GameTooltip, spellID, kinds.spell)
 end)
 
 if not isClassicWow then
-  hooksecurefunc(GameTooltip, "SetRecipeResultItem", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetRecipeResultItem", function(self, id)
     addLine(self, id, kinds.spell)
   end)
 
-  hooksecurefunc(GameTooltip, "SetRecipeRankInfo", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetRecipeRankInfo", function(self, id)
     addLine(self, id, kinds.spell)
   end)
 
   -- Artifact Powers
-  hooksecurefunc(GameTooltip, "SetArtifactPowerByID", function(self, powerID)
-    local powerInfo = C_ArtifactUI.GetPowerInfo(powerID)
+  _G.hooksecurefunc(_G.GameTooltip, "SetArtifactPowerByID", function(self, powerID)
+    local powerInfo = _G.C_ArtifactUI.GetPowerInfo(powerID)
     addLine(self, powerID, kinds.artifactpower)
     addLine(self, powerInfo.spellID, kinds.spell)
   end)
 
   -- Talents
-  hooksecurefunc(GameTooltip, "SetTalent", function(self, id)
-    local spellID = select(6, GetTalentInfoByID(id))
+  _G.hooksecurefunc(_G.GameTooltip, "SetTalent", function(self, id)
+    local spellID = select(6, _G.GetTalentInfoByID(id))
     addLine(self, id, kinds.talent)
     addLine(self, spellID, kinds.spell)
   end)
-  hooksecurefunc(GameTooltip, "SetPvpTalent", function(self, id)
-    local spellID = select(6, GetPvpTalentInfoByID(id))
+  _G.hooksecurefunc(_G.GameTooltip, "SetPvpTalent", function(self, id)
+    local spellID = select(6, _G.GetPvpTalentInfoByID(id))
     addLine(self, id, kinds.talent)
     addLine(self, spellID, kinds.spell)
   end)
 end
 -- NPCs
-GameTooltip:HookScript("OnTooltipSetUnit", function(self)
+_G.GameTooltip:HookScript("OnTooltipSetUnit", function(self)
   if not isClassicWow then
-    if C_PetBattles.IsInBattle() then return end
+    if _G.C_PetBattles.IsInBattle() then return end
   end
   local unit = select(2, self:GetUnit())
   if unit then
-    local guid = UnitGUID(unit) or ""
+    local guid = _G.UnitGUID(unit) or ""
     local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
-    if id and guid:match("%a+") ~= "Player" then addLine(GameTooltip, id, kinds.unit) end
+    if id and guid:match("%a+") ~= "Player" then addLine(_G.GameTooltip, id, kinds.unit) end
   end
 end)
 
 -- Items
 
 if not isClassicWow then
-  hooksecurefunc(GameTooltip, "SetToyByItemID", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetToyByItemID", function(self, id)
     addLine(self, id, kinds.item)
   end)
 
-  hooksecurefunc(GameTooltip, "SetRecipeReagentItem", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetRecipeReagentItem", function(self, id)
     addLine(self, id, kinds.item)
   end)
 end
@@ -196,9 +191,7 @@ local function attachItemTooltip(self)
   local itemString = string.match(link, "item:([%-?%d:]+)")
   if not itemString then return end
 
-  local enchantid = ""
-  local bonusid = ""
-  local gemid = ""
+  local enchantid
   local bonuses = {}
   local itemSplit = {}
 
@@ -217,21 +210,21 @@ local function attachItemTooltip(self)
   local gems = {}
   if not isClassicWow then
       for i=1, 4 do
-      local _,gemLink = GetItemGem(link, i)
+      local _,gemLink = _G.GetItemGem(link, i)
       if gemLink then
         local gemDetail = string.match(gemLink, "item[%-?%d:]+")
         gems[#gems + 1] = string.match(gemDetail, "item:(%d+):")
-      elseif flags == 256 then
+      elseif _G.flags == 256 then
         gems[#gems + 1] = "0"
       end
     end
   end
   local id = string.match(link, "item:(%d*)")
-  if (id == "" or id == "0") and TradeSkillFrame ~= nil and TradeSkillFrame:IsVisible() and GetMouseFocus().reagentIndex then
-    local selectedRecipe = TradeSkillFrame.RecipeList:GetSelectedRecipeID()
+  if (id == "" or id == "0") and _G.TradeSkillFrame ~= nil and _G.TradeSkillFrame:IsVisible() and _G.GetMouseFocus().reagentIndex then
+    local selectedRecipe = _G.TradeSkillFrame.RecipeList:GetSelectedRecipeID()
     for i = 1, 8 do
-      if GetMouseFocus().reagentIndex == i then
-        id = C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d*)") or nil
+      if _G.GetMouseFocus().reagentIndex == i then
+        id = _G.C_TradeSkillUI.GetRecipeReagentItemLink(selectedRecipe, i):match("item:(%d*)") or nil
         break
       end
     end
@@ -248,54 +241,54 @@ local function attachItemTooltip(self)
   end
 end
 
-GameTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
-ItemRefTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
-ItemRefShoppingTooltip1:HookScript("OnTooltipSetItem", attachItemTooltip)
-ItemRefShoppingTooltip2:HookScript("OnTooltipSetItem", attachItemTooltip)
-ShoppingTooltip1:HookScript("OnTooltipSetItem", attachItemTooltip)
-ShoppingTooltip2:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.GameTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.ItemRefTooltip:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.ItemRefShoppingTooltip1:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.ItemRefShoppingTooltip2:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.ShoppingTooltip1:HookScript("OnTooltipSetItem", attachItemTooltip)
+_G.ShoppingTooltip2:HookScript("OnTooltipSetItem", attachItemTooltip)
 
 -- Achievement Frame Tooltips
-local f = CreateFrame("frame")
+local f = _G.CreateFrame("frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(_, _, what)
   if what == "Blizzard_AchievementUI" then
-    for i,button in ipairs(AchievementFrameAchievementsContainer.buttons) do
+    for _,button in ipairs(_G.AchievementFrameAchievementsContainer.buttons) do
       button:HookScript("OnEnter", function()
-        GameTooltip:SetOwner(button, "ANCHOR_NONE")
-        GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
-        addLine(GameTooltip, button.id, kinds.achievement)
-        GameTooltip:Show()
+        _G.GameTooltip:SetOwner(button, "ANCHOR_NONE")
+        _G.GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
+        addLine(_G.GameTooltip, button.id, kinds.achievement)
+        _G.GameTooltip:Show()
       end)
       button:HookScript("OnLeave", function()
-        GameTooltip:Hide()
+        _G.GameTooltip:Hide()
       end)
 
       local hooked = {}
-      hooksecurefunc("AchievementButton_GetCriteria", function(index, renderOffScreen)
+      _G.hooksecurefunc("AchievementButton_GetCriteria", function(index, renderOffScreen)
         local frame = _G["AchievementFrameCriteria" .. (renderOffScreen and "OffScreen" or "") .. index]
         if frame and not hooked[frame] then
           frame:HookScript("OnEnter", function(self)
             local button = self:GetParent() and self:GetParent():GetParent()
             if not button or not button.id then return end
-            local criteriaid = select(10, GetAchievementCriteriaInfo(button.id, index))
+            local criteriaid = select(10, _G.GetAchievementCriteriaInfo(button.id, index))
             if criteriaid then
-              GameTooltip:SetOwner(button:GetParent(), "ANCHOR_NONE")
-              GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
-              addLine(GameTooltip, button.id, kinds.achievement)
-              addLine(GameTooltip, criteriaid, kinds.criteria)
-              GameTooltip:Show()
+              _G.GameTooltip:SetOwner(button:GetParent(), "ANCHOR_NONE")
+              _G.GameTooltip:SetPoint("TOPLEFT", button, "TOPRIGHT", 0, 0)
+              addLine(_G.GameTooltip, button.id, kinds.achievement)
+              addLine(_G.GameTooltip, criteriaid, kinds.criteria)
+              _G.GameTooltip:Show()
             end
           end)
           frame:HookScript("OnLeave", function()
-            GameTooltip:Hide()
+            _G.GameTooltip:Hide()
           end)
           hooked[frame] = true
         end
       end)
     end
   elseif what == "Blizzard_Collections" then
-    hooksecurefunc("WardrobeCollectionFrame_SetAppearanceTooltip", function(self, sources)
+    _G.hooksecurefunc("WardrobeCollectionFrame_SetAppearanceTooltip", function(_, sources)
       local visualIDs = {}
       local sourceIDs = {}
       local itemIDs = {}
@@ -306,57 +299,57 @@ f:SetScript("OnEvent", function(_, _, what)
         if sources[i].itemID and not contains(visualIDs, sources[i].itemID) then table.insert(itemIDs, sources[i].itemID) end
       end
 
-      if #visualIDs ~= 0 then addLine(GameTooltip, visualIDs, kinds.visual) end
-      if #sourceIDs ~= 0 then addLine(GameTooltip, sourceIDs, kinds.source) end
-      if #itemIDs ~= 0 then addLine(GameTooltip, itemIDs, kinds.item) end
+      if #visualIDs ~= 0 then addLine(_G.GameTooltip, visualIDs, kinds.visual) end
+      if #sourceIDs ~= 0 then addLine(_G.GameTooltip, sourceIDs, kinds.source) end
+      if #itemIDs ~= 0 then addLine(_G.GameTooltip, itemIDs, kinds.item) end
     end)
   end
 end)
 
 if not isClassicWow then
   -- Pet battle buttons
-  hooksecurefunc("PetBattleAbilityButton_OnEnter", function(self)
-    local petIndex = C_PetBattles.GetActivePet(LE_BATTLE_PET_ALLY)
+  _G.hooksecurefunc("PetBattleAbilityButton_OnEnter", function(self)
+    local petIndex = _G.C_PetBattles.GetActivePet(_G.LE_BATTLE_PET_ALLY)
     if self:GetEffectiveAlpha() > 0 then
-      local id = select(1, C_PetBattles.GetAbilityInfo(LE_BATTLE_PET_ALLY, petIndex, self:GetID()))
+      local id = select(1, _G.C_PetBattles.GetAbilityInfo(_G.LE_BATTLE_PET_ALLY, petIndex, self:GetID()))
       if id then
-        local oldText = PetBattlePrimaryAbilityTooltip.Description:GetText(id)
-        PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
+        local oldText = _G.PetBattlePrimaryAbilityTooltip.Description:GetText(id)
+        _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
       end
     end
   end)
 
   -- Pet battle auras
-  hooksecurefunc("PetBattleAura_OnEnter", function(self)
+  _G.hooksecurefunc("PetBattleAura_OnEnter", function(self)
     local parent = self:GetParent()
-    local id = select(1, C_PetBattles.GetAuraInfo(parent.petOwner, parent.petIndex, self.auraIndex))
+    local id = select(1, _G.C_PetBattles.GetAuraInfo(parent.petOwner, parent.petIndex, self.auraIndex))
     if id then
-      local oldText = PetBattlePrimaryAbilityTooltip.Description:GetText(id)
-      PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
+      local oldText = _G.PetBattlePrimaryAbilityTooltip.Description:GetText(id)
+      _G.PetBattlePrimaryAbilityTooltip.Description:SetText(oldText .. "\r\r" .. kinds.ability .. "|cffffffff " .. id .. "|r")
     end
   end)
 
   -- Currencies
-  hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
-    local id = tonumber(string.match(C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
+  _G.hooksecurefunc(_G.GameTooltip, "SetCurrencyToken", function(self, index)
+    local id = tonumber(string.match(_G.C_CurrencyInfo.GetCurrencyListLink(index),"currency:(%d+)"))
     addLine(self, id, kinds.currency)
   end)
 
-  hooksecurefunc(GameTooltip, "SetCurrencyByID", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetCurrencyByID", function(self, id)
      addLine(self, id, kinds.currency)
   end)
 
-  hooksecurefunc(GameTooltip, "SetCurrencyTokenByID", function(self, id)
+  _G.hooksecurefunc(_G.GameTooltip, "SetCurrencyTokenByID", function(self, id)
      addLine(self, id, kinds.currency)
   end)
 
   -- Quests
-  hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
-    local id = C_QuestLog.GetQuestIDForLogIndex(self.questLogIndex)
-    addLine(GameTooltip, id, kinds.quest)
+  _G.hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
+    local id = _G.C_QuestLog.GetQuestIDForLogIndex(self.questLogIndex)
+    addLine(_G.GameTooltip, id, kinds.quest)
   end)
 
-  hooksecurefunc("TaskPOI_OnEnter", function(self)
-    if self and self.questID then addLine(GameTooltip, self.questID, kinds.quest) end
+  _G.hooksecurefunc("TaskPOI_OnEnter", function(self)
+    if self and self.questID then addLine(_G.GameTooltip, self.questID, kinds.quest) end
   end)
 end
