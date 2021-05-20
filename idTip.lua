@@ -115,7 +115,7 @@ _G.hooksecurefunc(_G.GameTooltip, "SetSpellByID", function(self, id)
   addLineByKind(self, id, kinds.spell)
 end)
 
-_G.hooksecurefunc("SetItemRef", function(link, ...) --TODO: Check if ... can be removed
+_G.hooksecurefunc("SetItemRef", function(link) --TODO: Check if this works (removed ...)
   local id = tonumber(link:match("spell:(%d+)"))
   addLine(_G.ItemRefTooltip, id, kinds.spell)
 end)
